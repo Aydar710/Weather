@@ -11,19 +11,18 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.Menu
 import android.widget.Toast
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
+import ru.aydar.emptyweather.Constants
+import ru.aydar.emptyweather.Constants.Companion.LOCATION_PERMISSION_CODE
 import ru.aydar.emptyweather.R
+import ru.aydar.emptyweather.Retrofit
+import ru.aydar.emptyweather.WeatherAdapter
 import ru.aydar.emptyweather.models.Coord
 import ru.aydar.emptyweather.models.WeatherResponse
 import ru.aydar.emptyweather.repository.WeatherRepository
-import ru.aydar.weatherexample.Constants
-import ru.aydar.weatherexample.Constants.Companion.LOCATION_PERMISSION_CODE
-import ru.aydar.weatherexample.Retrofit
-import ru.aydar.weatherexample.WeatherAdapter
 
 class MainActivity : AppCompatActivity(), WeatherAdapter.Listener {
 
