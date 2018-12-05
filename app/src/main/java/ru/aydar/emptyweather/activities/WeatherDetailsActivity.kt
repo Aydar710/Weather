@@ -1,6 +1,7 @@
 package ru.aydar.emptyweather.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
 import android.support.v7.app.AppCompatActivity
@@ -10,51 +11,49 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.widget.Toast
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_weather_details.*
-import ru.aydar.emptyweather.Constants
-import ru.aydar.emptyweather.Constants.Companion.LOCATION_PERMISSION_CODE
 import ru.aydar.emptyweather.R
 import ru.aydar.emptyweather.Retrofit
+import ru.aydar.emptyweather.constants.LAT_KZN
+import ru.aydar.emptyweather.constants.LOCATION_PERMISSION_CODE
+import ru.aydar.emptyweather.constants.LON_KZN
+import ru.aydar.emptyweather.constants.CITY_ID
 import ru.aydar.emptyweather.models.Coord
-import ru.aydar.emptyweather.models.WeatherResponse
 import ru.aydar.emptyweather.repository.WeatherRepository
 
 class WeatherDetailsActivity : AppCompatActivity() {
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var coord: Coord
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather_details)
 
-        val position = intent.getIntExtra(Constants.POSITION, 0)
-        val weatherRepository = WeatherRepository(Retrofit.getInstance(this))
+        val mRetrofit = Retrofit.instance
+        val weatherRepository = WeatherRepository(mRetrofit.getWeatherService(this))
 
-        var fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        var coord = Coord()
-        coord.lat = java.lang.Double.parseDouble(Constants.LAT_KZN)
-        coord.lon = java.lang.Double.parseDouble(Constants.LON_KZN)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        coord = Coord()
+        coord.lat = java.lang.Double.parseDouble(LAT_KZN)
+        coord.lon = java.lang.Double.parseDouble(LON_KZN)
 
         checkLocationPermission()
-        fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    coord.lat = location?.latitude
-                    coord.lon = location?.longitude
-                }
 
-        weatherRepository.getCitiesInCycle(coord).subscribe(
-                { list ->
-                    val element: WeatherResponse.ListElement = list[position]
-                    txt_details_city.text = element.name
-                    txt_details_country.text = element.sys?.country
-                    txt_details_temp.text = "${element.main?.temp} °C"
-                    txt_details_humidity.text = "Влажность: ${element.main?.humidity} %"
-                    txt_details_pressure.text = "Давление: ${convertHectoPaskalToMillimeterOfMercury(element.main?.pressure)} мм.рт.ст"
-                    txt_details_direction.text = "Направление ветра: ${convertDegreesToDirection(element.wind?.deg)}"
+        weatherRepository.getCityById(intent.getIntExtra(CITY_ID, 0))
+                .subscribe({ weatherData ->
+                    txt_details_city.text = weatherData.name
+                    txt_details_country.text = weatherData.sys?.country
+                    txt_details_temp.text = "${weatherData.main?.temp} °C"
+                    txt_details_humidity.text = getString(R.string.humidity, weatherData.main?.humidity.toString())
+                    txt_details_pressure.text = getString(R.string.pressure, weatherData.main?.pressure?.convertToMmOfMercury().toString())
+                    txt_details_direction.text = getString(R.string.wind_direction, convertDegreesToDirection(weatherData.wind?.deg))
                 },
-                {
-                    it.printStackTrace()
-                }
-        )
+                        { it.printStackTrace() }
+                )
+
     }
 
     private fun convertDegreesToDirection(deg: Int?) =
@@ -73,13 +72,21 @@ class WeatherDetailsActivity : AppCompatActivity() {
                 else -> "Непонятно откуда"
             }
 
-    private fun convertHectoPaskalToMillimeterOfMercury(hPa: Int?) = hPa?.div(1.333)
+
+    fun Int.convertToMmOfMercury(): Double {
+        return this.div(1.333)
+    }
 
     fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             Log.i("weather", "Already granted")
+            fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location? ->
+                        coord.lat = location?.latitude
+                        coord.lon = location?.longitude
+                    }
         } else {
             requestLocationPermission()
         }
@@ -94,12 +101,22 @@ class WeatherDetailsActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             AlertDialog.Builder(this)
                     .setTitle("Permission needed")
                     .setMessage("This permission is needed to read storage")
-                    .setPositiveButton("ok") { dialog, which -> ActivityCompat.requestPermissions(this@WeatherDetailsActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CODE) }.setNegativeButton("cancel") { dialog, which -> dialog?.dismiss() }.create().show()
+                    .setPositiveButton("ok") { dialog, which ->
+                        ActivityCompat.requestPermissions(this@WeatherDetailsActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CODE)
+                        fusedLocationClient.lastLocation
+                                .addOnSuccessListener { location: Location? ->
+                                    coord.lat = location?.latitude
+                                    coord.lon = location?.longitude
+                                }
+                    }
+                    .setNegativeButton("cancel") { dialog, which -> dialog?.dismiss() }
+                    .create().show()
         } else {
             ActivityCompat.requestPermissions(this@WeatherDetailsActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CODE)
         }

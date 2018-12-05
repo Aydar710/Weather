@@ -20,6 +20,8 @@ interface WeatherApi {
     @GET("weather")
     fun getWeatherByCityName(@Query("q") cityName: String): Single<WeatherData>
 
+    @GET("weather?")
+    fun getWeatherByCityId(@Query("id") id: String): Single<WeatherData>
 
     @GET("find")
     fun getCitiesInCycle(

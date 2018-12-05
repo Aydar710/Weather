@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">EmptyWeather</string>
+    <string name="app_name">WeatherEx</string>
+    <string name="humidity">Влажность: %1$s</string>
+    <string name="pressure">Давление: %1$s мм.рт.ст</string>
+    <string name="temp">Температура: %1$s</string>
+    <string name="wind_direction">Направление ветра: %1$s</string>
 </resources>

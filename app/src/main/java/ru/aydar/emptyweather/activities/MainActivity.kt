@@ -1,6 +1,7 @@
 package ru.aydar.emptyweather.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,11 +16,13 @@ import android.widget.Toast
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.aydar.emptyweather.Constants
-import ru.aydar.emptyweather.Constants.Companion.LOCATION_PERMISSION_CODE
 import ru.aydar.emptyweather.R
 import ru.aydar.emptyweather.Retrofit
 import ru.aydar.emptyweather.WeatherAdapter
+import ru.aydar.emptyweather.constants.LAT_KZN
+import ru.aydar.emptyweather.constants.LOCATION_PERMISSION_CODE
+import ru.aydar.emptyweather.constants.LON_KZN
+import ru.aydar.emptyweather.constants.CITY_ID
 import ru.aydar.emptyweather.models.Coord
 import ru.aydar.emptyweather.models.WeatherResponse
 import ru.aydar.emptyweather.repository.WeatherRepository
@@ -28,44 +31,43 @@ class MainActivity : AppCompatActivity(), WeatherAdapter.Listener {
 
     private lateinit var weatherRepository: WeatherRepository
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
+    private lateinit var usersCoord: Coord
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        weatherRepository = WeatherRepository(Retrofit.getInstance(this))
+        val mRetrofit = Retrofit.instance
+        weatherRepository = WeatherRepository(mRetrofit.getWeatherService(this))
 
         checkLocationPermission()
-        var coord = Coord()
-        coord.lat = java.lang.Double.parseDouble(Constants.LAT_KZN)
-        coord.lon = java.lang.Double.parseDouble(Constants.LON_KZN)
-
-        fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    coord.lat = location?.latitude
-                    coord.lon = location?.longitude
-                }
+        usersCoord = Coord()
+        usersCoord.lat = java.lang.Double.parseDouble(LAT_KZN)
+        usersCoord.lon = java.lang.Double.parseDouble(LON_KZN)
 
         val recyclerView = rv_weather
         val adapter = WeatherAdapter(null)
-        weatherRepository.getCitiesInCycle(coord).subscribe(
+        weatherRepository.getCitiesInCycle(usersCoord).subscribe(
                 { list ->
                     adapter.submitList(list as ArrayList<WeatherResponse.ListElement>)
                 },
                 {
                     it.printStackTrace()
-                    print("ERROR")
                 })
         adapter.setListener(this)
         recyclerView.adapter = adapter
     }
 
-    fun checkLocationPermission() {
+    private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             Log.i("weather", "Already granted")
+            fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location? ->
+                        usersCoord.lat = location?.latitude
+                        usersCoord.lon = location?.longitude
+                    }
         } else {
             requestLocationPermission()
         }
@@ -80,24 +82,31 @@ class MainActivity : AppCompatActivity(), WeatherAdapter.Listener {
         }
     }
 
-    override fun onClick(position: Int) {
+    override fun onClick(id: Int?) {
         val intent = Intent(this, WeatherDetailsActivity::class.java)
-        intent.putExtra(Constants.POSITION, position)
+        intent.putExtra(CITY_ID, id)
         startActivity(intent)
     }
 
+    @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             AlertDialog.Builder(this)
                     .setTitle("Permission needed")
                     .setMessage("This permission is needed to read storage")
-                    .setPositiveButton("ok") { dialog, which -> ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CODE) }.setNegativeButton("cancel", object : DialogInterface.OnClickListener {
+                    .setPositiveButton("ok") { dialog, which ->
+                        ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CODE)
+                        fusedLocationClient.lastLocation
+                                .addOnSuccessListener { location: Location? ->
+                                    usersCoord.lat = location?.latitude
+                                    usersCoord.lon = location?.longitude
+                                }
+                    }
+                    .setNegativeButton("cancel", object : DialogInterface.OnClickListener {
                         override fun onClick(dialog: DialogInterface?, which: Int) {
                             dialog?.dismiss()
                         }
                     }).create().show()
-
-
         } else {
             ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CODE)
         }

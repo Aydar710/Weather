@@ -3,13 +3,13 @@ package ru.aydar.emptyweather.models
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class Coord {
+data class Coord (
 
     @SerializedName("lon")
     @Expose
-    var lon: Double? = null
+    var lon: Double? = null,
     @SerializedName("lat")
     @Expose
     var lat: Double? = null
 
-}
+)

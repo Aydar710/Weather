@@ -21,6 +21,9 @@ android {
         }
     }
 }
+androidExtensions {
+    experimental = true
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -47,7 +50,6 @@ dependencies {
     //stepho
     implementation 'com.facebook.stetho:stetho:1.4.2'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.4.2'
-
 
     implementation 'com.google.android.gms:play-services-location:16.0.0'
 }
