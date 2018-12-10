@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -52,4 +54,15 @@ dependencies {
     implementation 'com.facebook.stetho:stetho-okhttp3:1.4.2'
 
     implementation 'com.google.android.gms:play-services-location:16.0.0'
+
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    kapt "android.arch.persistence.room:compiler:1.1.1"
+
+    implementation "android.arch.persistence.room:rxjava2:1.0.0"
+
+    //Room viewer
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1'
+
 }
