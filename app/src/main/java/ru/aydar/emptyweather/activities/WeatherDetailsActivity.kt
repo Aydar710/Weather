@@ -66,18 +66,18 @@ class WeatherDetailsActivity : AppCompatActivity() {
 
     private fun convertDegreesToDirection(deg: Int?) =
             when (deg) {
-                in 0..44 -> "Северо-Северо-Восток"
-                45 -> "Северо-Восток"
-                in 45..89 -> "Восток-Северо-Восток"
-                90 -> "Восток"
-                in 90..134 -> "Восток-Юго-Восток"
-                135 -> "Юго-Восток"
-                in 135..179 -> "Юго-Юго_Восток"
-                in 180..224 -> "Юго-Запад"
-                in 225..269 -> "Запад"
-                in 270..314 -> "Северо-Запад"
-                in 315..360 -> "Север"
-                else -> "Непонятно откуда"
+                in 0..44 -> getString(R.string.north_north_east)
+                45 -> getString(R.string.north_east)
+                in 45..89 -> getString(R.string.east_north_east)
+                90 -> getString(R.string.east)
+                in 90..134 -> getString(R.string.east_south_east)
+                135 -> getString(R.string.south_east)
+                in 135..179 -> getString(R.string.south_south_east)
+                in 180..224 -> getString(R.string.south_west)
+                in 225..269 -> getString(R.string.west)
+                in 270..314 -> getString(R.string.north_west)
+                in 315..360 -> getString(R.string.north)
+                else -> getString(R.string.unknown)
             }
 
 
