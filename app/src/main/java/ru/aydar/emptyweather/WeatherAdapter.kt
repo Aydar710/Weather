@@ -22,7 +22,7 @@ class WeatherAdapter(private val listener: ListItemClickListener) : ListAdapter<
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val listElement = getItem(position)
         listElement?.let {
-            holder.bind(it, it.id!!)
+            holder.bind(it, it.id)
         }
     }
 
@@ -31,13 +31,15 @@ class WeatherAdapter(private val listener: ListItemClickListener) : ListAdapter<
         var txtCountry = containerView.txt_country
         var txtCity = containerView.txt_city
 
-        fun bind(item: WeatherResponse.WeatherResp, id: Int) {
+        fun bind(item: WeatherResponse.WeatherResp, id: Int?) {
             txtTemp.text = item.main?.temp.toString()
             txtCity.text = item.name
             txtCountry.text = item.sys?.country
 
             containerView.setOnClickListener {
-                listener.onItemClick(id)
+                id?.let {
+                    listener.onItemClick(it)
+                }
             }
         }
     }

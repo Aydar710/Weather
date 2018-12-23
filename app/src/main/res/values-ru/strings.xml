@@ -16,4 +16,10 @@
     <string name="north_west">Северо-Запад</string>
     <string name="north">Север</string>
     <string name="unknown">Непонятно откуда</string>
+    <string name="permission_granted">Разрешение получено</string>
+    <string name="permission_denied">Разрешение не получено</string>
+    <string name="permission_needed">Требуется разрешение</string>
+    <string name="permission_needed_reason">Разрешение требуется для доступа к вашему местоположению</string>
+    <string name="cancel">отмена</string>
+    <string name="ok">ок</string>
 </resources>

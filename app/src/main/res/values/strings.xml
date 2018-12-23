@@ -16,4 +16,10 @@
     <string name="north_west">North-West</string>
     <string name="north">North</string>
     <string name="unknown">Unknown</string>
+    <string name="permission_granted">Permission granted</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="permission_needed">Permission needed</string>
+    <string name="permission_needed_reason">This permission is needed to get your location</string>
+    <string name="cancel">cancel</string>
+    <string name="ok">ok</string>
 </resources>
