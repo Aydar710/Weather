@@ -123,9 +123,9 @@ class MainActivity : AppCompatActivity(), WeatherAdapter.ListItemClickListener {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == LOCATION_PERMISSION_CODE) {
             if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission granted", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.permission_granted), Toast.LENGTH_LONG).show()
             } else
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.permission_denied), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -139,9 +139,9 @@ class MainActivity : AppCompatActivity(), WeatherAdapter.ListItemClickListener {
     private fun requestLocationPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             AlertDialog.Builder(this)
-                    .setTitle("Permission needed")
-                    .setMessage("This permission is needed to read storage")
-                    .setPositiveButton("ok") { dialog, which ->
+                    .setTitle(getString(R.string.permission_needed))
+                    .setMessage(getString(R.string.permission_needed_reason))
+                    .setPositiveButton(getString(R.string.ok)) { dialog, which ->
                         ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CODE)
                         fusedLocationClient.lastLocation
                                 .addOnSuccessListener { location: Location? ->
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity(), WeatherAdapter.ListItemClickListener {
                                     usersCoord.lon = location?.longitude
                                 }
                     }
-                    .setNegativeButton("cancel", object : DialogInterface.OnClickListener {
+                    .setNegativeButton(getString(R.string.cancel), object : DialogInterface.OnClickListener {
                         override fun onClick(dialog: DialogInterface?, which: Int) {
                             dialog?.dismiss()
                         }
