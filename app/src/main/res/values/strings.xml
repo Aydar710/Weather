@@ -1,3 +1,25 @@
 <resources>
-    <string name="app_name">EmptyWeather</string>
+    <string name="app_name">WeatherEx</string>
+    <string name="humidity">Humidity: %1$s</string>
+    <string name="pressure">Pressure: %1$s millimeter of mercury</string>
+    <string name="temp">Temperature: %1$s</string>
+    <string name="wind_direction">Wind direction: %1$s</string>
+    <string name="north_north_east">North-North_East</string>
+    <string name="north_east">North-East</string>
+    <string name="east_north_east">East-North_East</string>
+    <string name="east">East</string>
+    <string name="east_south_east">East-South-East</string>
+    <string name="south_east">South-East</string>
+    <string name="south_south_east">South-South-East</string>
+    <string name="south_west">South-West</string>
+    <string name="west">West</string>
+    <string name="north_west">North-West</string>
+    <string name="north">North</string>
+    <string name="unknown">Unknown</string>
+    <string name="permission_granted">Permission granted</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="permission_needed">Permission needed</string>
+    <string name="permission_needed_reason">This permission is needed to get your location</string>
+    <string name="cancel">cancel</string>
+    <string name="ok">ok</string>
 </resources>
